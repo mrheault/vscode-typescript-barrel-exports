@@ -4,6 +4,7 @@
   "description": "Easily create and maintain TypeScript barrel exports in your project.",
   "author": "Mike Rheault",
   "publisher": "mikerheault",
+  "icon": "images/barrel-exports-icon.png",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.93.0"
@@ -17,10 +18,66 @@
   "contributes": {
     "commands": [
       {
-        "command": "vscode-typescript-barrel-exports.helloWorld",
-        "title": "Hello World"
+        "command": "ts.barrel-exports.generateBarrel",
+        "title": "Generate Barrel File"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "submenu": "ts.createBarrel",
+          "when": "explorerResourceIsFolder",
+          "group": "TS@1"
+        }
+      ],
+      "ts.createBarrel": [
+        {
+          "command": "ts.barrel-exports.generateBarrel",
+          "when": "explorerResourceIsFolder",
+          "group": "TS@0"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "ts.createBarrel",
+        "label": "Barrel Export Generator"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "TS Barrel Generator",
+      "properties": {
+        "tsBarrelGenerator.config.namedExports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Specify if you want to use named exports in the barrel file."
+        },
+        "tsBarrelGenerator.config.semis": {
+          "type": "boolean",
+          "default": true,
+          "description": "Specify if you want to enable/disable the usage of semis in the barrel file."
+        },
+        "tsBarrelGenerator.config.includeFoldersToExport": {
+          "type": "boolean",
+          "default": true,
+          "description": "Specify if you want to include folder as well to the module export. Will only be applied if folder contains a `index.ts` file."
+        },
+        "tsBarrelGenerator.config.quotes": {
+          "type": "string",
+          "default": "'",
+          "enum": [
+            "'",
+            "\""
+          ],
+          "enumDescriptions": [
+            "Single quote",
+            "Double quote"
+          ],
+          "description": "Specify the character that you want to use as the quoting character; typically ' or \""
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -37,16 +94,17 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.93.0",
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
+    "@types/vscode": "^1.93.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
-    "eslint": "^9.9.1",
-    "esbuild": "^0.23.1",
-    "npm-run-all": "^4.1.5",
-    "typescript": "^5.5.4",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.23.1",
+    "eslint": "^9.9.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
   }
 }
