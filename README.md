@@ -1,71 +1,42 @@
-# vscode-typescript-barrel-exports README
+# Just Another VSCode React NextJS File Generator ![Version](https://img.shields.io/visual-studio-marketplace/v/mikerheault.vscode-react-nextjs-generator)
 
-This is the README for your extension "vscode-typescript-barrel-exports". After writing up a brief description, we recommend including the following sections.
+A VSCode extension to effortlessly generate React and Next.js files with customizable templates.
 
-## Features
+## ✨ Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+                                       |
 
-For example if there is an image subfolder under your extension project workspace:
+## 🛠️ Installation
 
-\!\[feature X\]\(images/feature-x.png\)
+There are several ways to install.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- Install from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=mikerheault.vscode-typescript-barrel-exports).
+- From the VS Code Extensions view (`Ctrl+Shift+X`) or (`Cmd+Shift+X`), search for `Just Another TS Barrel Exporter`.
+- Run `ext install mikerheault.vscode-react-nextjs-generator` in the command palette (`Ctrl+Shift+P`) or (`Cmd+Shift+P`).
 
-## Requirements
+## ▶️ Demo
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## ⚙️ Configuration/Settings
 
-## Extension Settings
+## 👨‍💻 Usage
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+1. **Manually generate a barrel file:**
 
-For example:
+- Right-click on a folder in the Explorer.
+- Select `Barrel Export Generator > Generate Barrel File`.
 
-This extension contributes the following settings:
+## 🤝 Contributing
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+[Contributions are welcome!](https://github.com/mrheault/vscode-typescript-barrel-exports/pulls)
 
-## Known Issues
+## 📜 License
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Licensed under the MIT License.
 
-## Release Notes
+## 🚨 Support
 
-Users appreciate release notes as you update your extension.
+For issues or feature requests, [file an issue](https://github.com/mrheault/vscode-typescript-barrel-exports/issues).
 
-### 1.0.0
+## 📢 Release Notes
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+[Change log here](https://github.com/mrheault/vscode-typescript-barrel-exports/blob/main/CHANGELOG.md)

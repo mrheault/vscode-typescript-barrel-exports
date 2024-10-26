@@ -1,7 +1,7 @@
 {
   "name": "vscode-typescript-barrel-exports",
-  "displayName": "VSCode Typescript Barrel Exports",
-  "description": "Easily create and maintain TypeScript barrel exports in your project.",
+  "displayName": "Just Another TS Barrel Exporter",
+  "description": "Create and maintain barrel export files `index.ts`. Configurable including named exports.",
   "author": "Mike Rheault",
   "publisher": "mikerheault",
   "icon": "images/barrel-exports-icon.png",

@@ -8,9 +8,9 @@ export function activate(context: vscode.ExtensionContext) {
 
   const generateBarrel = vscode.commands.registerCommand(
     "ts.barrel-exports.generateBarrel",
-    async (uri: vscode.Uri) => {
-      if (uri) {
-        await CreateBarrelFile.create(uri);
+    async (_, selectedFilesOrDirectories: vscode.Uri[]) => {
+      if (selectedFilesOrDirectories) {
+        await CreateBarrelFile.create(selectedFilesOrDirectories);
       } else {
         vscode.window.showErrorMessage("No folder path selected");
       }
