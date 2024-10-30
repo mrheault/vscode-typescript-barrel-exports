@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { join, basename, extname } from "path";
+import { join, basename, extname, normalize } from "path";
 import {
   fileExists,
   getConfiguration,
@@ -8,6 +8,7 @@ import {
   showErrorMessage,
   getFileContents,
   parseFileForNamedExports,
+  readDirectory,
 } from "../helpers";
 
 export const BarrelFiles = ["index.ts", "index.tsx"];
@@ -24,8 +25,8 @@ export class CreateBarrelFile {
     const includeFolders = config.get("includeFolders", true);
 
     for (const uri of uris) {
-      const dirPath = uri.fsPath;
-      const files = await vscode.workspace.fs.readDirectory(uri);
+      const dirPath = normalize(uri.fsPath);
+      const files = await readDirectory(uri);
       if (!files.length) {
         showErrorMessage(`No files found in the directory: ${dirPath}`);
         continue;
@@ -35,7 +36,7 @@ export class CreateBarrelFile {
 
       for (const file of files) {
         const fileName = file[0];
-        const absPath = join(dirPath, fileName);
+        const absPath = normalize(join(dirPath, fileName));
 
         if (
           (fileName.endsWith(".ts") || fileName.endsWith(".tsx")) &&
@@ -45,10 +46,9 @@ export class CreateBarrelFile {
         }
         if (includeFolders) {
           // Only allow folder which contain an index file
-          const stat = await vscode.workspace.fs.stat(vscode.Uri.file(absPath));
-          if (stat.type === vscode.FileType.Directory) {
+          if (await fileExists(absPath)) {
             for (const indexFile of BarrelFiles) {
-              const indexPath = join(absPath, indexFile);
+              const indexPath = normalize(join(absPath, indexFile));
               if (await fileExists(indexPath)) {
                 filesToExport.push(absPath);
                 break;
@@ -93,7 +93,7 @@ export class CreateBarrelFile {
         }
       }
 
-      const barrelFilePath = join(dirPath, "index.ts");
+      const barrelFilePath = normalize(join(dirPath, "index.ts"));
       if (!(await fileExists(barrelFilePath))) {
         writeFile(barrelFilePath, "");
       }

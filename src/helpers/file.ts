@@ -1,4 +1,4 @@
-import { workspace, Uri, WorkspaceConfiguration, FileType } from "vscode";
+import { workspace, Uri, FileType } from "vscode";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import { BARREL_FILES } from "../constants";
@@ -21,6 +21,7 @@ export const fileExists = async (filePath: string): Promise<boolean> => {
     return false;
   }
 };
+export const readDirectory = (uri: Uri) => workspace.fs.readDirectory(uri);
 
 export const readFile = async (filePath: string): Promise<string | undefined> => {
   const file = await workspace.fs.readFile(Uri.file(filePath));
