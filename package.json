@@ -75,6 +75,16 @@
             "Double quote"
           ],
           "description": "Specify the character that you want to use as the quoting character; typically ' or \""
+        },
+        "tsBarrelGenerator.config.exportOrder": {
+          "type": "string",
+          "default": "none",
+          "enum": [
+            "none",
+            "alphabetical",
+            "byType"
+          ],
+          "description": "Specify the order in which exports should appear in the barrel file."
         }
       }
     }

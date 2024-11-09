@@ -9,6 +9,7 @@ import {
   getFileContents,
   parseFileForNamedExports,
   readDirectory,
+  Logger,
 } from "../helpers";
 
 export const BarrelFiles = ["index.ts", "index.tsx"];
@@ -17,18 +18,22 @@ export class CreateBarrelFile {
   public static async create(uris: vscode.Uri[]): Promise<void> {
     if (!uris || uris.length === 0) {
       showErrorMessage("No directories selected");
+      Logger.error("No directories selected for barrel file creation.");
       return;
     }
 
     const config = getConfiguration("tsBarrelGenerator.config");
     const namedExports = config.get("namedExports", true);
     const includeFolders = config.get("includeFolders", true);
+    const exportOrder = config.get<"none" | "alphabetical" | "byType">("exportOrder", "none");
 
     for (const uri of uris) {
       const dirPath = normalize(uri.fsPath);
+      Logger.info(`Processing directory: ${dirPath}`);
       const files = await readDirectory(uri);
       if (!files.length) {
         showErrorMessage(`No files found in the directory: ${dirPath}`);
+        Logger.error(`No files found in the directory: ${dirPath}`);
         continue;
       }
 
@@ -60,6 +65,7 @@ export class CreateBarrelFile {
 
       if (!filesToExport.length) {
         showErrorMessage(`No files found to export in directory: ${dirPath}`);
+        Logger.error(`No files found to export in directory: ${dirPath}`);
         continue;
       }
 
@@ -70,41 +76,60 @@ export class CreateBarrelFile {
         const semis = config.get("semis", true);
         const quotes = config.get("quotes", "'");
 
-        if (namedExports) {
-          const fileContents = await getFileContents(file);
-          const { namedExports, typeExports } = parseFileForNamedExports(fileContents || "", fileWithoutExtension);
+        try {
+          if (namedExports) {
+            const fileContents = await getFileContents(file);
+            const { namedExports, typeExports } = parseFileForNamedExports(fileContents || "", fileWithoutExtension);
 
-          const namedExportsStr = namedExports.filter(Boolean).join(", ");
-          const typeExportsStr = typeExports.filter(Boolean).join(", ");
-          let exportStr = "";
-          if (namedExportsStr) {
-            exportStr += `export { ${namedExportsStr} } from ${quotes}./${fileWithoutExtension}${quotes}${
-              semis ? ";" : ""
-            }\n`;
+            const namedExportsStr = namedExports.filter(Boolean).join(", ");
+            const typeExportsStr = typeExports.filter(Boolean).join(", ");
+            let exportStr = "";
+            if (namedExportsStr) {
+              exportStr += `export { ${namedExportsStr} } from ${quotes}./${fileWithoutExtension}${quotes}${
+                semis ? ";" : ""
+              }\n`;
+            }
+            if (typeExportsStr) {
+              exportStr += `export type { ${typeExportsStr} } from ${quotes}./${fileWithoutExtension}${quotes}${
+                semis ? ";" : ""
+              }\n`;
+            }
+            output.push(exportStr);
+          } else {
+            output.push(`export * from ${quotes}./${fileWithoutExtension}${quotes}${semis ? ";" : ""}\n`);
           }
-          if (typeExportsStr) {
-            exportStr += `export type { ${typeExportsStr} } from ${quotes}./${fileWithoutExtension}${quotes}${
-              semis ? ";" : ""
-            }\n`;
-          }
-          output.push(exportStr);
-        } else {
-          output.push(`export * from ${quotes}./${fileWithoutExtension}${quotes}${semis ? ";" : ""}\n`);
+        } catch (error) {
+          Logger.logError(`Error processing file: ${file}`, error);
         }
       }
 
-      const barrelFilePath = normalize(join(dirPath, "index.ts"));
-      if (!(await fileExists(barrelFilePath))) {
-        writeFile(barrelFilePath, "");
+      // Sort the output based on the exportOrder configuration
+      if (exportOrder === "alphabetical") {
+        output.sort();
+      } else if (exportOrder === "byType") {
+        const typeExports = output.filter((line) => line.startsWith("export type"));
+        const valueExports = output.filter((line) => !line.startsWith("export type"));
+        output.length = 0;
+        output.push(...typeExports, ...valueExports);
       }
-      const fileContents = await getFileContents(barrelFilePath);
-      const newContent = output.join("");
 
-      if (fileContents !== newContent) {
-        writeFile(barrelFilePath, newContent);
+      try {
+        const barrelFilePath = normalize(join(dirPath, "index.ts"));
+        if (!(await fileExists(barrelFilePath))) {
+          writeFile(barrelFilePath, "");
+        }
+        const fileContents = await getFileContents(barrelFilePath);
+        const newContent = output.join("");
+
+        if (fileContents !== newContent) {
+          writeFile(barrelFilePath, newContent);
+        }
+      } catch (error) {
+        Logger.logError(`Error writing barrel file in directory: ${dirPath}`, error);
       }
     }
 
     showInformationMessage("Barrel files created successfully!");
+    Logger.info("Barrel files created successfully!");
   }
 }
