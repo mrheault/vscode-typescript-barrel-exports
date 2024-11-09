@@ -116,6 +116,7 @@ export class CreateBarrelFile {
           Logger.logError(`Error processing file: ${file}`, error);
         }
       }
+
       // Sort the output based on the exportOrder configuration
       if (exportOrder === "alphabetical") {
         output.sort((a, b) => a.localeCompare(b));
