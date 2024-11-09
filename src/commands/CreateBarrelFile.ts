@@ -80,21 +80,35 @@ export class CreateBarrelFile {
           if (namedExports) {
             const fileContents = await getFileContents(file);
             const { namedExports, typeExports } = parseFileForNamedExports(fileContents || "", fileWithoutExtension);
-
+            // Sort the output based on the exportOrder configuration
+            if (exportOrder === "alphabetical") {
+              namedExports.sort();
+              typeExports.sort();
+            }
             const namedExportsStr = namedExports.filter(Boolean).join(", ");
             const typeExportsStr = typeExports.filter(Boolean).join(", ");
             let exportStr = "";
             if (namedExportsStr) {
-              exportStr += `export { ${namedExportsStr} } from ${quotes}./${fileWithoutExtension}${quotes}${
-                semis ? ";" : ""
-              }\n`;
+              exportStr += `export { ${namedExportsStr} } from ${quotes}./${fileWithoutExtension}${quotes}${semis ? ";" : ""}\n`;
             }
             if (typeExportsStr) {
-              exportStr += `export type { ${typeExportsStr} } from ${quotes}./${fileWithoutExtension}${quotes}${
-                semis ? ";" : ""
-              }\n`;
+              exportStr += `export type { ${typeExportsStr} } from ${quotes}./${fileWithoutExtension}${quotes}${semis ? ";" : ""}\n`;
             }
-            output.push(exportStr);
+            if (exportOrder === "byType") {
+              const typeExportsArr = typeExportsStr
+                ? [
+                    `export type { ${typeExportsStr} } from ${quotes}./${fileWithoutExtension}${quotes}${semis ? ";" : ""}\n`,
+                  ]
+                : [];
+              const valueExportsArr = namedExportsStr
+                ? [
+                    `export { ${namedExportsStr} } from ${quotes}./${fileWithoutExtension}${quotes}${semis ? ";" : ""}\n`,
+                  ]
+                : [];
+              output.push(...valueExportsArr, ...typeExportsArr);
+            } else {
+              output.push(exportStr);
+            }
           } else {
             output.push(`export * from ${quotes}./${fileWithoutExtension}${quotes}${semis ? ";" : ""}\n`);
           }
@@ -102,15 +116,19 @@ export class CreateBarrelFile {
           Logger.logError(`Error processing file: ${file}`, error);
         }
       }
-
       // Sort the output based on the exportOrder configuration
       if (exportOrder === "alphabetical") {
-        output.sort();
+        output.sort((a, b) => a.localeCompare(b));
       } else if (exportOrder === "byType") {
-        const typeExports = output.filter((line) => line.startsWith("export type"));
-        const valueExports = output.filter((line) => !line.startsWith("export type"));
-        output.length = 0;
-        output.push(...typeExports, ...valueExports);
+        output.sort((a, b) => {
+          if (a.startsWith("export type") && !b.startsWith("export type")) {
+            return 1;
+          }
+          if (!a.startsWith("export type") && b.startsWith("export type")) {
+            return -1;
+          }
+          return a.localeCompare(b);
+        });
       }
 
       try {

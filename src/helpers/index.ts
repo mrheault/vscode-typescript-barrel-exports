@@ -3,3 +3,4 @@ export * from "./message";
 export * from "./getConfig";
 export * from "./parseFileForNamedExports";
 export * from "./exports";
+export * from "./logger";
