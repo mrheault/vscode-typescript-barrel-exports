@@ -19,31 +19,91 @@
     "commands": [
       {
         "command": "ts.barrel-exports.generateBarrel",
-        "title": "Generate Barrel File"
+        "title": "Generate Barrel File",
+        "category": "TS Barrel Generator"
+      },
+      {
+        "command": "ts.barrel-exports.addFolderToListener",
+        "title": "Add Folder to Barrel Listener",
+        "category": "TS Barrel Generator"
+      },
+      {
+        "command": "ts.barrel-exports.removeFolderFromListener",
+        "title": "Remove Folder from Barrel Listener",
+        "category": "TS Barrel Generator"
+      },
+      {
+        "command": "ts.barrel-exports.excludePath",
+        "title": "Exclude File or Folder from Barrel Creation",
+        "category": "TS Barrel Generator"
+      },
+      {
+        "command": "ts.barrel-exports.removeExcludePath",
+        "title": "Remove Path from Excluded Paths",
+        "category": "TS Barrel Generator"
       }
     ],
     "menus": {
       "explorer/context": [
         {
-          "submenu": "ts.createBarrel",
-          "when": "explorerResourceIsFolder",
+          "submenu": "tsBarrelGenerator.submenu",
           "group": "TS@1"
         }
       ],
-      "ts.createBarrel": [
+      "tsBarrelGenerator.submenu": [
         {
           "command": "ts.barrel-exports.generateBarrel",
           "when": "explorerResourceIsFolder",
           "group": "TS@0"
+        },
+        {
+          "command": "ts.barrel-exports.addFolderToListener",
+          "when": "explorerResourceIsFolder",
+          "group": "TS@1"
+        },
+        {
+          "command": "ts.barrel-exports.excludePath",
+          "when": "explorerResourceIsFolder && config.tsBarrelGenerator.config.includeFoldersToExport",
+          "group": "TS@3"
+        },
+        {
+          "command": "ts.barrel-exports.excludePath",
+          "when": "resourceExtname == .ts || resourceExtname == .tsx",
+          "group": "TS@4"
+        },
+        {
+          "command": "ts.barrel-exports.removeExcludePath",
+          "when": "explorerResourceIsFolder || resourceExtname == .ts || resourceExtname == .tsx",
+          "group": "TS@5"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "ts.barrel-exports.removeFolderFromListener",
+          "when": "viewItem == folderItem && folderInListenerArray",
+          "group": "TS@1"
+        },
+        {
+          "command": "ts.barrel-exports.removeExcludePath",
+          "when": "viewItem == folderItem && folderInExcludedArray",
+          "group": "TS@1"
         }
       ]
     },
     "submenus": [
       {
-        "id": "ts.createBarrel",
+        "id": "tsBarrelGenerator.submenu",
         "label": "Barrel Export Generator"
       }
     ],
+    "views": {
+      "explorer": [
+        {
+          "id": "tsBarrelGenerator.folderTreeView",
+          "name": "Barrel Generator"
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "TS Barrel Generator",
@@ -85,6 +145,30 @@
             "byType"
           ],
           "description": "Specify the order in which exports should appear in the barrel file."
+        },
+        "tsBarrelGenerator.config.foldersToWatch": {
+          "type": "array",
+          "default": [],
+          "description": "List of folders to watch for changes to auto-update barrel files.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tsBarrelGenerator.config.foldersToExclude": {
+          "type": "array",
+          "default": [],
+          "description": "List of folders to exclude from barrel file creation.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tsBarrelGenerator.config.excludedPaths": {
+          "type": "array",
+          "default": [],
+          "description": "List of paths (files or folders) to exclude from barrel file creation.",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }

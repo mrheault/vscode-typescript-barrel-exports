@@ -26,9 +26,14 @@ export class CreateBarrelFile {
     const namedExports = config.get("namedExports", true);
     const includeFolders = config.get("includeFolders", true);
     const exportOrder = config.get<"none" | "alphabetical" | "byType">("exportOrder", "none");
+    const excludedPaths = config.get<string[]>("excludedPaths", []);
 
     for (const uri of uris) {
       const dirPath = normalize(uri.fsPath);
+      if (excludedPaths.includes(vscode.workspace.asRelativePath(dirPath))) {
+        Logger.info(`Skipping excluded directory: ${dirPath}`);
+        continue;
+      }
       Logger.info(`Processing directory: ${dirPath}`);
       const files = await readDirectory(uri);
       if (!files.length) {
@@ -42,6 +47,7 @@ export class CreateBarrelFile {
       for (const file of files) {
         const fileName = file[0];
         const absPath = normalize(join(dirPath, fileName));
+        if (excludedPaths.includes(vscode.workspace.asRelativePath(absPath))) continue;
 
         if (
           (fileName.endsWith(".ts") || fileName.endsWith(".tsx")) &&
